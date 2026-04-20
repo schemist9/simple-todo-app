@@ -37,7 +37,7 @@ function toggleTodo(PDO $pdo, int $todoId)
         return false;
     }
 
-    $nextState = $todo['completed'] === 0 ? 'TRUE' : 'FALSE';
+    $nextState = $todo['completed'] === 0 ? 1 : 0;
 
     $query = "UPDATE todos
                 SET completed = :nextState
@@ -74,7 +74,7 @@ if (isset($_POST['todo_title']))
     $todoTitle = $_POST['todo_title'];
     createTodo($pdo, $todoTitle);
 }
-else if (isset($_POST['todo_complete']))
+else if (isset($_POST['action']) && $_POST['action'] === 'toggle')
 {
     $todoId = $_POST['todo_id'];
     toggleTodo($pdo, (int) $todoId);
@@ -100,6 +100,7 @@ function displayTodos(array $todos)
             <span>$todoTitle</span>
             <form action="/" method="POST">
                 <input type="hidden" name="todo_id" value="{$todo['id']}">
+                <input type="hidden" name="action" value="toggle">
                 <input type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted>
                 <button type="submit">Update</button>
             </form>
