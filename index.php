@@ -24,10 +24,39 @@ function createTodo(PDO $pdo, string $todoTitle)
     ]);
 }
 
+function toggleTodo(PDO $pdo, int $todoId)
+{
+    $query = "SELECT * FROM todos WHERE id = :todoId";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+        ':todoId' => $todoId
+    ]);
+    $todo = $stmt->fetch();
+
+    if (empty($todo)) {
+        return false;
+    }
+
+    $nextState = $todo['completed'] === 0 ? 'TRUE' : 'FALSE';
+
+    $query = "UPDATE todos
+                SET completed = :nextState
+                WHERE id = :todoId";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+        ':nextState' => $nextState,
+        ':todoId' => $todoId
+    ]);
+}
+
 if (isset($_POST['todo_title']))
 {
     $todoTitle = $_POST['todo_title'];
     createTodo($pdo, $todoTitle);
+}
+else if (isset($_POST['todo_complete'])) {
+    $todoId = $_POST['todo_id'];
+    toggleTodo($pdo, (int) $todoId);
 }
 
 $query = "SELECT * FROM todos";
@@ -37,13 +66,17 @@ $result = $stmt->fetchAll();
 
 function displayTodos(array $todos)
 {
-    echo '<ul>';
+    echo '<ul class="todos">';
     foreach ($todos as $todo) {
         $todoCompleted = $todo['completed'] ? 'checked' : '';
         echo <<<TODO
-    <li data-todo-id="{$todo['id']}">
-        <span>{$todo['text']}</span>
-        <input type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted>
+    <li class="todo-item" data-todo-id="{$todo['id']}">
+            <span>{$todo['text']}</span>
+            <form action="/" method="POST">
+                <input type="hidden" name="todo_id" value="{$todo['id']}">
+                <input type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted>
+                <button type="submit">Update</button>
+            </form>
     </li>
 TODO;
 
