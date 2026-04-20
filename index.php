@@ -15,6 +15,17 @@ $query = "CREATE TABLE IF NOT EXISTS todos (
 $stmt = $pdo->prepare($query);;
 $stmt->execute();
 
+function findTodo(PDO $pdo, int $todoId)
+{
+    $query = "SELECT * FROM todos WHERE id = :todoId";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+        ':todoId' => $todoId
+    ]);
+    $todo = $stmt->fetch();
+    return $todo;
+}
+
 function createTodo(PDO $pdo, string $todoTitle)
 {
     $query = "INSERT INTO todos (text) VALUES (:todo_title)";
@@ -26,13 +37,7 @@ function createTodo(PDO $pdo, string $todoTitle)
 
 function toggleTodo(PDO $pdo, int $todoId)
 {
-    $query = "SELECT * FROM todos WHERE id = :todoId";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([
-        ':todoId' => $todoId
-    ]);
-    $todo = $stmt->fetch();
-
+    $todo = findTodo($pdo, $todoId);
     if (empty($todo)) {
         return false;
     }
@@ -51,12 +56,7 @@ function toggleTodo(PDO $pdo, int $todoId)
 
 function deleteTodo(PDO $pdo, int $todoId)
 {
-    $query = "SELECT * FROM todos WHERE id = :todoId";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([
-        ':todoId' => $todoId
-    ]);
-    $todo = $stmt->fetch();
+    $todo = findTodo($pdo, $todoId);
 
     if (empty($todo)) {
         return false;
