@@ -94,9 +94,10 @@ function displayTodos(array $todos)
     echo '<ul class="todos">';
     foreach ($todos as $todo) {
         $todoCompleted = $todo['completed'] ? 'checked' : '';
+        $todoTitle = htmlspecialchars($todo['text']);
         echo <<<TODO
     <li class="todo-item" data-todo-id="{$todo['id']}">
-            <span>{$todo['text']}</span>
+            <span>$todoTitle</span>
             <form action="/" method="POST">
                 <input type="hidden" name="todo_id" value="{$todo['id']}">
                 <input type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted>
