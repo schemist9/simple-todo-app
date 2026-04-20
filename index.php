@@ -49,14 +49,39 @@ function toggleTodo(PDO $pdo, int $todoId)
     ]);
 }
 
+function deleteTodo(PDO $pdo, int $todoId)
+{
+    $query = "SELECT * FROM todos WHERE id = :todoId";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+        ':todoId' => $todoId
+    ]);
+    $todo = $stmt->fetch();
+
+    if (empty($todo)) {
+        return false;
+    }
+
+    $query = "DELETE FROM todos WHERE id = :todoId";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([
+        ':todoId' => $todoId
+    ]);
+}
+
 if (isset($_POST['todo_title']))
 {
     $todoTitle = $_POST['todo_title'];
     createTodo($pdo, $todoTitle);
 }
-else if (isset($_POST['todo_complete'])) {
+else if (isset($_POST['todo_complete']))
+{
     $todoId = $_POST['todo_id'];
     toggleTodo($pdo, (int) $todoId);
+}
+else if (isset($_POST['action']) && $_POST['action'] === 'delete') {
+    $todoId = $_POST['todo_id'];
+    deleteTodo($pdo, (int) $todoId);
 }
 
 $query = "SELECT * FROM todos";
@@ -76,6 +101,12 @@ function displayTodos(array $todos)
                 <input type="hidden" name="todo_id" value="{$todo['id']}">
                 <input type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted>
                 <button type="submit">Update</button>
+            </form>
+            
+            <form action="/" method="POST">
+                <input type="hidden" name="todo_id" value="{$todo['id']}">
+                <input type="hidden" name="action" value="delete">
+                <button type="submit">Delete</button>
             </form>
     </li>
 TODO;
