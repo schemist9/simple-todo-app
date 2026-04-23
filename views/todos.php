@@ -1,0 +1,24 @@
+<?php
+echo '<ul class="todos">';
+    foreach ($todos as $key => $todo) {
+        $todoCompleted = $todo->isCompleted ? 'checked' : '';
+        $todoTitle = htmlspecialchars($todo->text);
+        echo <<<TODO
+    <li class="todo-item" data-todo-id="{$todo->id}">
+            <span>$todoTitle</span>
+            <form action="/" method="POST">
+                <input type="hidden" name="todo_id" value="{$todo->id}">
+                <input type="hidden" name="action" value="toggle">
+                <input type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted>
+                <button type="submit">Update</button>
+            </form>
+            
+            <form action="/todos/delete" method="POST">
+                <input type="hidden" name="todo_id" value="{$todo->id}">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit">Delete</button>
+            </form>
+    </li>
+TODO;
+    }
+echo '</ul>';
