@@ -4,6 +4,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 include 'router.php';
 include 'Controllers/TodosController.php';
+include './views/View.php';
+include 'Controllers/IndexController.php';
 include_once 'database.php';
 
 DB::init();
@@ -55,69 +57,25 @@ function toggleTodo(PDO $pdo, int $todoId)
     ]);
 }
 
-function deleteTodo(PDO $pdo, int $todoId)
-{
-    $todo = findTodo($pdo, $todoId);
-
-    if (empty($todo)) {
-        return false;
-    }
-
-    $query = "DELETE FROM todos WHERE id = :todoId";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([
-        ':todoId' => $todoId
-    ]);
-}
-
 $router = new Router();
 
 $router->post('/todos/delete', [TodosController::class, 'delete']);
+$router->get('/', [IndexController::class, 'index']);
 
 if (isset($_POST['todo_title']))
 {
     $todoTitle = $_POST['todo_title'];
     createTodo($pdo, $todoTitle);
+    header("Location: /");
+    exit;
 }
 else if (isset($_POST['action']) && $_POST['action'] === 'toggle')
 {
     $todoId = $_POST['todo_id'];
     toggleTodo($pdo, (int) $todoId);
+    header("Location: /");
+    exit;
 } else {
     $router->resolve($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 }
 
-$query = "SELECT * FROM todos";
-$stmt = $pdo->prepare($query);
-$stmt->execute();;
-$result = $stmt->fetchAll();
-include 'index.html';
-function displayTodos(array $todos)
-{
-    echo '<ul class="todos">';
-    foreach ($todos as $todo) {
-        $todoCompleted = $todo['completed'] ? 'checked' : '';
-        $todoTitle = htmlspecialchars($todo['text']);
-        echo <<<TODO
-    <li class="todo-item" data-todo-id="{$todo['id']}">
-            <span>$todoTitle</span>
-            <form action="/" method="POST">
-                <input type="hidden" name="todo_id" value="{$todo['id']}">
-                <input type="hidden" name="action" value="toggle">
-                <input type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted>
-                <button type="submit">Update</button>
-            </form>
-            
-            <form action="/todos/delete" method="POST">
-                <input type="hidden" name="todo_id" value="{$todo['id']}">
-                <input type="hidden" name="_method" value="DELETE">
-                <button type="submit">Delete</button>
-            </form>
-    </li>
-TODO;
-
-    }
-    echo '</ul>';
-}
-
-displayTodos($result);
