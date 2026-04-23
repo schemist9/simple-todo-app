@@ -29,15 +29,6 @@ function findTodo(PDO $pdo, int $todoId)
     return $todo;
 }
 
-function createTodo(PDO $pdo, string $todoTitle)
-{
-    $query = "INSERT INTO todos (text) VALUES (:todo_title)";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([
-        ':todo_title' => $todoTitle
-    ]);
-}
-
 function toggleTodo(PDO $pdo, int $todoId)
 {
     $todo = findTodo($pdo, $todoId);
@@ -60,16 +51,10 @@ function toggleTodo(PDO $pdo, int $todoId)
 $router = new Router();
 
 $router->post('/todos/delete', [TodosController::class, 'delete']);
-$router->get('/', [IndexController::class, 'index']);
+$router->post('/todos', [TodosController::class, 'create']);
+$router->get('/', [TodosController::class, 'index']);
 
-if (isset($_POST['todo_title']))
-{
-    $todoTitle = $_POST['todo_title'];
-    createTodo($pdo, $todoTitle);
-    header("Location: /");
-    exit;
-}
-else if (isset($_POST['action']) && $_POST['action'] === 'toggle')
+if (isset($_POST['action']) && $_POST['action'] === 'toggle')
 {
     $todoId = $_POST['todo_id'];
     toggleTodo($pdo, (int) $todoId);

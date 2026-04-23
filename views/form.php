@@ -1,4 +1,4 @@
-<form action="/" method="post">
+<form action="/todos" method="post">
     <input type="text" name="todo_title" id="todo_title">
     <button type="submit">Create</button>
 </form>

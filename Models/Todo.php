@@ -39,12 +39,12 @@ class Todo
         return new static($todo['id'], $todo['completed'], $todo['text']);
     }
 
-    public function create(PDO $pdo, string $todoTitle)
+    public function create(PDO $pdo)
     {
         $query = "INSERT INTO todos (text) VALUES (:todo_title)";
         $stmt = $pdo->prepare($query);
         $stmt->execute([
-            ':todo_title' => $todoTitle
+            ':todo_title' => $this->text
         ]);
     }
 

@@ -21,4 +21,19 @@ class TodosController
             header('Location: /');
             // exit;
     }
+
+
+    public function create()
+    {
+        $pdo = DB::getInstance();
+
+        if (isset($_POST['todo_title']))
+        {
+            $todoTitle = $_POST['todo_title'];
+            $todo = new Todo(null, false, $todoTitle);
+            $todo->create($pdo);
+            header("Location: /");
+            exit;
+        }
+    }
 }
