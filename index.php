@@ -2,11 +2,12 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
-include 'index.html';
+include 'router.php';
+include 'Controllers/TodosController.php';
+include_once 'database.php';
 
-$pdo = new PDO('sqlite:mydb.sq3', '', '', [
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-]);
+DB::init();
+$pdo = DB::getInstance();
 
 $query = "CREATE TABLE IF NOT EXISTS todos (
     id INTEGER PRIMARY KEY,
@@ -69,6 +70,10 @@ function deleteTodo(PDO $pdo, int $todoId)
     ]);
 }
 
+$router = new Router();
+
+$router->post('/todos/delete', [TodosController::class, 'delete']);
+
 if (isset($_POST['todo_title']))
 {
     $todoTitle = $_POST['todo_title'];
@@ -78,17 +83,15 @@ else if (isset($_POST['action']) && $_POST['action'] === 'toggle')
 {
     $todoId = $_POST['todo_id'];
     toggleTodo($pdo, (int) $todoId);
-}
-else if (isset($_POST['action']) && $_POST['action'] === 'delete') {
-    $todoId = $_POST['todo_id'];
-    deleteTodo($pdo, (int) $todoId);
+} else {
+    $router->resolve($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 }
 
 $query = "SELECT * FROM todos";
 $stmt = $pdo->prepare($query);
 $stmt->execute();;
 $result = $stmt->fetchAll();
-
+include 'index.html';
 function displayTodos(array $todos)
 {
     echo '<ul class="todos">';
@@ -105,9 +108,9 @@ function displayTodos(array $todos)
                 <button type="submit">Update</button>
             </form>
             
-            <form action="/" method="POST">
+            <form action="/todos/delete" method="POST">
                 <input type="hidden" name="todo_id" value="{$todo['id']}">
-                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="_method" value="DELETE">
                 <button type="submit">Delete</button>
             </form>
     </li>
