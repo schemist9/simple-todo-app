@@ -13,13 +13,24 @@ class TodosController
 
     public function delete()
     {
-            $pdo = DB::getInstance();
-            $todoId = $_POST['todo_id'];
-            
-            Todo::find($pdo, (int) $todoId)->delete($pdo);
+        $pdo = DB::getInstance();
+        $todoId = $_POST['todo_id'];
 
+        if (!isset($todoId)) {
             header('Location: /');
-            // exit;
+            exit;
+        }
+        
+        $todo = Todo::find($pdo, (int) $todoId);
+        if (!$todo) {
+            header("Location: /");
+            exit;
+        }
+
+        $todo->delete($pdo);
+
+        header('Location: /');
+        exit;
     }
 
 
