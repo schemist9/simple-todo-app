@@ -51,28 +51,39 @@ class TodosController
     public function update()
     {
         $pdo = DB::getInstance();
-        if (!isset($_POST['todo_id'])) {
-            header("Location: /");
+
+        $rawInput = file_get_contents('php://input');
+        $data = json_decode($rawInput, true);
+
+        if (!isset($data['id'])) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'failure', 
+                'message' => 'Todo id must be specified',
+            ]);
             exit;
         }
 
-        $todoId = $_POST['todo_id'];
+        $todoId = $data['id'];
 
         $todo = Todo::find($pdo, $todoId);
 
         if (!$todo) {
-            header('Location: /');
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'failure', 
+                'message' => 'Todo not found',
+            ]);
             exit;
         }
 
-        if (isset($_POST['text'])) {
-            $todo->update($pdo, ['text' => $_POST['text']]);
-        } else if (isset($_POST['todo_complete'])) {
-            $todo->update($pdo, ['completed' => !$todo->isCompleted]);
-        }
+        $todo->update($pdo, $data);
 
-
-        header("Location: /");
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success', 
+            'message' => 'Todo updated',
+        ]);
         exit;
     }
 }

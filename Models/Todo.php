@@ -48,25 +48,6 @@ class Todo
         ]);
     }
 
-    public function toggle(PDO $pdo, int $todoId)
-    {
-        $todo = findTodo($pdo, $todoId);
-        if (empty($todo)) {
-            return false;
-        }
-
-        $nextState = $todo['completed'] === 0 ? 1 : 0;
-
-        $query = "UPDATE todos
-                    SET completed = :nextState
-                    WHERE id = :todoId";
-        $stmt = $pdo->prepare($query);
-        $stmt->execute([
-            ':nextState' => $nextState,
-            ':todoId' => $todoId
-        ]);
-    }
-
     public function delete(PDO $pdo)
     {
         if ($this->id === null) {
@@ -82,10 +63,14 @@ class Todo
 
     public function update(PDO $pdo, array $properties)
     {
+        $allowedProperties = ["completed", "text"];
         $query = "UPDATE todos SET ";
         $set = "";
         $execute = [];
         foreach ($properties as $key => $value) {
+            if (!in_array($key, $allowedProperties)) {
+                continue;
+            }
             $set .= "$key = :$key,";
             $execute[":$key"] = $value;
         }
