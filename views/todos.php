@@ -6,7 +6,7 @@ echo '<ul class="todos">';
         echo <<<TODO
     <li class="todo-item" data-todo-id="{$todo->id}">
             <span>$todoTitle</span>
-            <form action="/" method="POST">
+            <form action="/todos/update" method="POST">
                 <input type="hidden" name="todo_id" value="{$todo->id}">
                 <input type="hidden" name="action" value="toggle">
                 <input type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted>

@@ -47,4 +47,32 @@ class TodosController
             exit;
         }
     }
+
+    public function update()
+    {
+        $pdo = DB::getInstance();
+        if (!isset($_POST['todo_id'])) {
+            header("Location: /");
+            exit;
+        }
+
+        $todoId = $_POST['todo_id'];
+
+        $todo = Todo::find($pdo, $todoId);
+
+        if (!$todo) {
+            header('Location: /');
+            exit;
+        }
+
+        if (isset($_POST['text'])) {
+            $todo->update($pdo, ['text' => $_POST['text']]);
+        } else if (isset($_POST['todo_complete'])) {
+            $todo->update($pdo, ['completed' => !$todo->isCompleted]);
+        }
+
+
+        header("Location: /");
+        exit;
+    }
 }

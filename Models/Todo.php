@@ -79,4 +79,21 @@ class Todo
             ':todoId' => $this->id
         ]);
     }
+
+    public function update(PDO $pdo, array $properties)
+    {
+        $query = "UPDATE todos SET ";
+        $set = "";
+        $execute = [];
+        foreach ($properties as $key => $value) {
+            $set .= "$key = :$key,";
+            $execute[":$key"] = $value;
+        }
+        $set = substr($set, 0, -1);
+        $query .= $set;
+        $query .= " WHERE id = :id";
+
+        $stmt = $pdo->prepare($query);
+        $stmt->execute(array_merge($execute, [':id' => $this->id]));
+    }
 }

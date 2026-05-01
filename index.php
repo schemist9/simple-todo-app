@@ -18,49 +18,14 @@ $query = "CREATE TABLE IF NOT EXISTS todos (
 $stmt = $pdo->prepare($query);;
 $stmt->execute();
 
-function findTodo(PDO $pdo, int $todoId)
-{
-    $query = "SELECT * FROM todos WHERE id = :todoId";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([
-        ':todoId' => $todoId
-    ]);
-    $todo = $stmt->fetch();
-    return $todo;
-}
-
-function toggleTodo(PDO $pdo, int $todoId)
-{
-    $todo = findTodo($pdo, $todoId);
-    if (empty($todo)) {
-        return false;
-    }
-
-    $nextState = $todo['completed'] === 0 ? 1 : 0;
-
-    $query = "UPDATE todos
-                SET completed = :nextState
-                WHERE id = :todoId";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([
-        ':nextState' => $nextState,
-        ':todoId' => $todoId
-    ]);
-}
-
 $router = new Router();
 
 $router->post('/todos/delete', [TodosController::class, 'delete']);
 $router->post('/todos', [TodosController::class, 'create']);
+$router->post('/todos/update', [TodosController::class, 'update']);
 $router->get('/', [TodosController::class, 'index']);
 
-if (isset($_POST['action']) && $_POST['action'] === 'toggle')
-{
-    $todoId = $_POST['todo_id'];
-    toggleTodo($pdo, (int) $todoId);
-    header("Location: /");
-    exit;
-} else {
-    $router->resolve($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-}
+
+$router->resolve($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+
 
