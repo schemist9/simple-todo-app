@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 include 'router.php';
 include 'Controllers/TodosController.php';
-include './views/View.php';
+include './View.php';
 include 'Controllers/IndexController.php';
 include_once 'database.php';
 
@@ -26,6 +26,6 @@ $router->post('/todos/update', [TodosController::class, 'update']);
 $router->get('/', [TodosController::class, 'index']);
 
 
-$router->resolve($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+echo $router->resolve($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
 
 

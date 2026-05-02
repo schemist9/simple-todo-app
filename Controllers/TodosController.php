@@ -18,35 +18,31 @@ class TodosController
         $rawInput = file_get_contents('php://input');
         $data = json_decode($rawInput, true);
 
+        header('Content-Type: application/json');
+
         if (!isset($data['id'])) {
-            header('Content-Type: application/json');
-            echo json_encode([
+            return json_encode([
                 'status' => 'failure', 
                 'message' => 'Todo id must be specified',
             ]);
-            exit;
         }
 
         $todoId = $data['id'];
-        
         $todo = Todo::find($pdo, (int) $todoId);
+
         if (!$todo) {
-            header('Content-Type: application/json');
-            echo json_encode([
+            return json_encode([
                 'status' => 'failure',
                 'message' => 'Todo not found'
             ]);
-            exit;
         }
 
         $todo->delete($pdo);
 
-        header('Content-Type: application/json');
-        echo json_encode([
+        return json_encode([
             'status' => 'success',
             'message' => 'Todo has been deleted'
         ]);
-        exit;
     }
 
 
@@ -57,28 +53,25 @@ class TodosController
         $rawInput = file_get_contents('php://input');
         $data = json_decode($rawInput, true);
 
+        header('Content-Type: application/json');
+
         if (!isset($data['text'])) {
-            header('Content-Type: application/json');
-            echo json_encode([
+            return json_encode([
                 'status' => 'failure',
                 'message' => 'Todo title must be provided'
             ]);
-            exit;
         }
 
         $todo = new Todo(text: $data['text']);
         $todo->create($pdo);
 
-        header('Content-Type: application/json');
-        echo json_encode([
+        return json_encode([
             'status' => 'success',
             'message' => 'Todo has been created',
             'data' => [
                 'id' => $todo->id
             ]
         ]);
-        exit;
-
     }
 
     public function update()
@@ -88,13 +81,13 @@ class TodosController
         $rawInput = file_get_contents('php://input');
         $data = json_decode($rawInput, true);
 
+        header('Content-Type: application/json');
+
         if (!isset($data['id'])) {
-            header('Content-Type: application/json');
-            echo json_encode([
+            return json_encode([
                 'status' => 'failure', 
                 'message' => 'Todo id must be specified',
             ]);
-            exit;
         }
 
         $todoId = $data['id'];
@@ -102,21 +95,17 @@ class TodosController
         $todo = Todo::find($pdo, $todoId);
 
         if (!$todo) {
-            header('Content-Type: application/json');
-            echo json_encode([
+            return json_encode([
                 'status' => 'failure', 
                 'message' => 'Todo not found',
             ]);
-            exit;
         }
 
         $todo->update($pdo, $data);
 
-        header('Content-Type: application/json');
-        echo json_encode([
+        return json_encode([
             'status' => 'success', 
             'message' => 'Todo updated',
         ]);
-        exit;
     }
 }
