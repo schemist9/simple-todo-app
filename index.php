@@ -20,9 +20,9 @@ $stmt->execute();
 
 $router = new Router();
 
-$router->post('/todos/delete', [TodosController::class, 'delete']);
+$router->delete('/todos/delete', [TodosController::class, 'delete']);
 $router->post('/todos', [TodosController::class, 'create']);
-$router->post('/todos/update', [TodosController::class, 'update']);
+$router->patch('/todos/update', [TodosController::class, 'update']);
 $router->get('/', [TodosController::class, 'index']);
 
 

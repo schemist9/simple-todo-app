@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', event => {
                 
                 console.log(`Clicked on todo with the id ${todoId}`);
                 fetch(`/todos/update`, {
-                    method: 'POST',
+                    method: 'PATCH',
                     headers: {
                         "Content-Type": 'application/json'
                     },
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', event => {
                 .then(data => console.log(data));
             } else if (event.target.classList.contains('todo-remove')) {
                 fetch('/todos/delete', {
-                    method: 'POST',
+                    method: 'DELETE',
                     headers: {
                         "Content-Type": 'application/json'
                     },

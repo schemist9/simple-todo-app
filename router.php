@@ -21,7 +21,12 @@ class Router
 
     public function delete(string $uri, callable|array $callback)
     {
-        $this->routes[$uri]['delete'] = $callback;
+        $this->routes[$uri]['DELETE'] = $callback;
+    }
+
+    public function patch(string $uri, callable|array $callback)
+    {
+        $this->routes[$uri]['PATCH'] = $callback;
     }
 
     public function resolve(string $method, string $uri)
