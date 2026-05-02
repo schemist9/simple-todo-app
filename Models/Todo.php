@@ -34,7 +34,7 @@ class Todo
         ]);
         $todo = $stmt->fetch();
 
-        if (!$todo) return new static();
+        if (!$todo) return null;
         
         return new static($todo['id'], $todo['completed'], $todo['text']);
     }
