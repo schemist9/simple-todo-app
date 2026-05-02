@@ -6,13 +6,9 @@ echo '<ul class="todos">';
         echo <<<TODO
     <li class="todo-item" data-todo-id="{$todo->id}">
             <span>$todoTitle</span>
-            <input type="checkbox" name="todo_complete" id="todo_complete" value="1" $todoCompleted>
+            <input class="todo-toggle" type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted autocomplete="off">
             
-            <form action="/todos/delete" method="POST">
-                <input type="hidden" name="todo_id" value="{$todo->id}">
-                <input type="hidden" name="_method" value="DELETE">
-                <button type="submit">Delete</button>
-            </form>
+            <button class="todo-remove" type="submit">Delete</button>
     </li>
 TODO;
     }

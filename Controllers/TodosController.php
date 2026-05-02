@@ -14,22 +14,38 @@ class TodosController
     public function delete()
     {
         $pdo = DB::getInstance();
-        $todoId = $_POST['todo_id'];
 
-        if (!isset($todoId)) {
-            header('Location: /');
+        $rawInput = file_get_contents('php://input');
+        $data = json_decode($rawInput, true);
+
+        if (!isset($data['id'])) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'failure', 
+                'message' => 'Todo id must be specified',
+            ]);
             exit;
         }
+
+        $todoId = $data['id'];
         
         $todo = Todo::find($pdo, (int) $todoId);
         if (!$todo) {
-            header("Location: /");
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'failure',
+                'message' => 'Todo not found'
+            ]);
             exit;
         }
 
         $todo->delete($pdo);
 
-        header('Location: /');
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Todo has been deleted'
+        ]);
         exit;
     }
 
