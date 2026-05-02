@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<?php $data ?>
+<?php echo $data ?>
 
 <script src="main.js"></script>
 </body>
