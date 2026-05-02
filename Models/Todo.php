@@ -75,11 +75,15 @@ class Todo
             $set .= "$key = :$key,";
             $execute[":$key"] = $value;
         }
+        if (strlen($set) === 0 || count($execute) === 0) {
+            return null;
+        }
         $set = substr($set, 0, -1);
         $query .= $set;
         $query .= " WHERE id = :id";
 
         $stmt = $pdo->prepare($query);
         $stmt->execute(array_merge($execute, [':id' => $this->id]));
+        return true;
     }
 }

@@ -7,8 +7,8 @@ echo '<ul class="todos">';
     <li class="todo-item" data-todo-id="{$todo->id}">
             <span>$todoTitle</span>
             <input class="todo-toggle" type="checkbox" name="todo_complete" id="todo_complete" $todoCompleted autocomplete="off">
-            
-            <button class="todo-remove" type="submit">Delete</button>
+            <button class="todo-text-change">Change text</button>
+            <button class="todo-remove">Delete</button>
     </li>
 TODO;
     }

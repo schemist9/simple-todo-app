@@ -37,6 +37,26 @@ document.addEventListener('DOMContentLoaded', event => {
                         todo.remove();
                     }
                 });
+            } else if (event.target.classList.contains('todo-text-change')) {
+                const todoTextElement = todo.querySelector('span');
+                const currentTodoText = todoTextElement.textContent;
+                const newText = prompt('New todo text:', currentTodoText);
+                fetch('/todos/update', {
+                    method: 'PATCH',
+                    headers: {
+                        "Content-Type": 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: todoId,
+                        text: newText
+                    })
+                })
+                .then(response => response.json())
+                .then(response => {
+                    if (response.status === 'success') {
+                        todoTextElement.textContent = newText
+                    }
+                });
             }
         }
     });

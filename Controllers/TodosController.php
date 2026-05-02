@@ -101,7 +101,14 @@ class TodosController
             ]);
         }
 
-        $todo->update($pdo, $data);
+        $result = $todo->update($pdo, $data);
+
+        if ($result === null) {
+            return json_encode([
+                'status' => 'failure', 
+                'message' => 'An error has occured',
+            ]);
+        }
 
         return json_encode([
             'status' => 'success', 
