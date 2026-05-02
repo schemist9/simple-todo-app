@@ -39,5 +39,53 @@ document.addEventListener('DOMContentLoaded', event => {
                 });
             }
         }
+    });
+
+    const form = document.querySelector('.todo-create');
+    form.addEventListener('submit', event => {
+        event.preventDefault();
+        const formFieldsData = new FormData(form);
+        const text = formFieldsData.get('text');
+        console.log(formFieldsData);
+
+        fetch('/todos', {
+            method: 'POST',
+            headers: {
+                "Content-Type": 'application/json'
+            },
+            body: JSON.stringify({
+                text
+            })
+        })
+        .then(response => response.json())
+        .then(response => {
+            if (response.status === 'success') {
+                createTodoElement(text, response.data.id);
+            }
+        });
     })
+
+    const createTodoElement = (text, id) => {
+        const todo = document.createElement('li');
+        todo.classList.add('todo-item');
+        todo.setAttribute('data-todo-id', id);
+
+        const todoText = document.createElement('span');
+        todoText.textContent = text;
+
+        const todoCheckbox = document.createElement('input');
+        todoCheckbox.setAttribute('id', 'todo_complete');
+        todoCheckbox.classList.add('todo-toggle');
+        todoCheckbox.setAttribute('type', 'checkbox');
+        todoCheckbox.setAttribute('name', 'todo_complete');
+        todoCheckbox.setAttribute('autocomplete', 'off');
+
+        const todoDeleteButton = document.createElement('button');
+        todoDeleteButton.classList.add('todo-remove');
+        todoDeleteButton.textContent = 'Delete';
+
+        todo.append(todoText, todoCheckbox, todoDeleteButton);
+
+        todoContainer.append(todo);
+    };
 });

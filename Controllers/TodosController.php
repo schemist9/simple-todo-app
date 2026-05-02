@@ -54,14 +54,31 @@ class TodosController
     {
         $pdo = DB::getInstance();
 
-        if (isset($_POST['todo_title']))
-        {
-            $todoTitle = $_POST['todo_title'];
-            $todo = new Todo(null, false, $todoTitle);
-            $todo->create($pdo);
-            header("Location: /");
+        $rawInput = file_get_contents('php://input');
+        $data = json_decode($rawInput, true);
+
+        if (!isset($data['text'])) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'status' => 'failure',
+                'message' => 'Todo title must be provided'
+            ]);
             exit;
         }
+
+        $todo = new Todo(text: $data['text']);
+        $todo->create($pdo);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Todo has been created',
+            'data' => [
+                'id' => $todo->id
+            ]
+        ]);
+        exit;
+
     }
 
     public function update()

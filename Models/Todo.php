@@ -46,6 +46,7 @@ class Todo
         $stmt->execute([
             ':todo_title' => $this->text
         ]);
+        $this->id = $pdo->lastInsertId();
     }
 
     public function delete(PDO $pdo)
